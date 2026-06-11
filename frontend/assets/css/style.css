@@ -22,6 +22,7 @@ body{
     --primary-color:#3C83F6;
     --second-color: white;
     --text-color: #727171;
+    --link-color: #1b73ff;
 }
 
 .main {
@@ -74,7 +75,7 @@ body{
 }
 
 #password{
-    padding-right: 30px;
+    padding-right: 40px;
 }
 
 .floating-label{
@@ -155,4 +156,68 @@ body{
     transition: background-color .3s ease;
     display: block;
     margin: 0 auto;
+}
+
+.form-btn--submit:hover{
+    background-color: #0f56c9;
+}
+
+.form-link{
+    color: var(--link-color);
+}
+.form-link:hover{
+    text-decoration: none;
+}
+
+.left{
+    color: var(--second-color);
+    width: 300px;
+    position: absolute;
+    top: 180px;
+    margin: 40px;
+}
+
+.left p{
+    margin-top:20px;
+}
+
+.line{
+    height: 2px;
+    background-color: var(--second-color);
+    width: 70px;
+    border-radius: 5px;
+}
+
+.know-btn {
+    background-color: var(--primary-color);
+    color: var(--second-color);
+    font-size: 20px;
+    border: 1px solid white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    margin-top: 20px;
+}
+
+.know-btn:hover{
+    background-color: #428aff;
+}
+
+.circle1{
+    height: 120px;
+    width:120px;
+    border-radius: 50%;
+    background-color: var(--second-color);
+    position: absolute;
+    top: 60%;
+    transform: translateX(350px);
+}
+
+.circle2{
+    height: 90px;
+    width:90px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    position: absolute;
+    top: 62%;
+    transform: translateX(365px);
 }
