@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Billing Dashboard | POS Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e0eaf0 0%, #cfdde6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 20px;
+        }
+
+        /* main card container */
+        .billing-container {
+            max-width: 1380px;
+            width: 100%;
+            background: #f9fafc;
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* two column layout */
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        /* LEFT PANEL: product grid / menu */
+        .menu-section {
+            flex: 1.2;
+            min-width: 260px;
+            background: white;
+            padding: 1.5rem 1.2rem 2rem 1.5rem;
+            border-right: 1px solid #eef2f6;
+        }
+
+        .menu-header {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1e2a3e;
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .menu-header span:first-child {
+            background: #f1f5f9;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #2c3e66;
+        }
+
+        .select-hint {
+            font-size: 0.8rem;
+            color: #5b6e8c;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid #f97316;
+            padding-left: 0.7rem;
+            font-weight: 500;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .product-card {
+            background: #ffffff;
+            border-radius: 1.2rem;
+            padding: 0.8rem 0.6rem 0.9rem 0.6rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eef2f8;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            border-color: #f97316;
+            box-shadow: 0 12px 18px -10px rgba(249, 115, 22, 0.2);
+            background: #fffaf5;
+        }
+
+        .product-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1e293b;
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: #f97316;
+            margin-top: 6px;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+        }
+
+        .price-currency {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #5b6e8c;
+        }
+
+        .category-row {
+            margin-top: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            align-items: center;
+            border-top: 1px solid #ecf3f9;
+            padding-top: 1.5rem;
+        }
+
+        .category-badge {
+            background: #f1f5f9;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #2c3e66;
+            letter-spacing: 0.3px;
+            cursor: default;
+            transition: 0.1s;
+        }
+
+        /* RIGHT PANEL: BILLING TABLE & SUMMARY */
+        .billing-section {
+            flex: 1.5;
+            min-width: 380px;
+            background: #ffffff;
+            padding: 1.5rem 1.5rem 1.8rem 1.5rem;
+        }
+
+        .checkout-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkout-title::before {
+            content: "🧾";
+            font-size: 1.5rem;
+        }
+
+        /* table styling */
+        .bill-table-wrapper {
+            overflow-x: auto;
+            border-radius: 1rem;
+            border: 1px solid #edf2f7;
+            background: white;
+            margin-bottom: 1.4rem;
+        }
+
+        .bill-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 480px;
+        }
+
+        .bill-table th {
+            text-align: left;
+            padding: 0.9rem 0.8rem;
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #1e2a3e;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bill-table td {
+            padding: 0.8rem 0.8rem;
+            border-bottom: 1px solid #f0f4f9;
+            color: #1f2a44;
+            font-weight: 500;
+            vertical-align: middle;
+        }
+
+        .item-name-cell {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .qty-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 0.2rem 0.5rem;
+            border-radius: 32px;
+        }
+
+        .qty-btn {
+            background: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #f97316;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: 0.1s;
+        }
+
+        .qty-btn:hover {
+            background: #f97316;
+            color: white;
+        }
+
+        .qty-number {
+            min-width: 24px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .discount-badge {
+            background: #eef2ff;
+            padding: 4px 8px;
+            border-radius: 24px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: 0.1s;
+        }
+
+        .remove-item:hover {
+            color: #ef4444;
+        }
+
+        /* discount row */
+        .discount-global {
+            background: #fef9f0;
+            border-radius: 1rem;
+            padding: 0.8rem 1rem;
+            margin: 1.2rem 0 1rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .discount-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .discount-control label {
+            font-weight: 600;
+            color: #b45309;
+        }
+
+        #discountPercentInput {
+            width: 75px;
+            padding: 8px 6px;
+            border-radius: 40px;
+            border: 1px solid #ffe2bf;
+            background: white;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .summary-stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: #fefcf7;
+            padding: 1rem 1.2rem;
+            border-radius: 1.2rem;
+            margin: 0.5rem 0 1.5rem 0;
+            font-weight: 600;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #5b6e8c;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .total-save {
+            color: #16a34a;
+        }
+
+        .total-amount {
+            color: #f97316;
+            font-size: 1.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .btn-cancel {
+            background: #fff0f0;
+            color: #b91c1c;
+        }
+
+        .btn-cancel:hover {
+            background: #fee2e2;
+        }
+
+        .btn-hold {
+            background: #eef2ff;
+            color: #1e40af;
+        }
+
+        .btn-pay {
+            background: #f97316;
+            color: white;
+            box-shadow: 0 4px 8px rgba(249, 115, 22, 0.2);
+        }
+
+        .btn-pay:hover {
+            background: #ea580c;
+            transform: scale(0.98);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+        }
+
+        hr {
+            margin: 8px 0;
+            border-color: #eef2f8;
+        }
+    </style>
+</head>
+<body>
+<div class="billing-container">
+    <div class="dashboard">
+        <!-- LEFT: menu items (inspired by SVG) -->
+        <div class="menu-section">
+            <div class="menu-header">
+                <span>🍹 Juice Bar</span>
+                <span>✨ Select items</span>
+            </div>
+            <div class="select-hint">▼ click to add to bill</div>
+            <div class="product-grid" id="productGrid">
+                <!-- dynamic product items, but we'll also hardcode with js but fill from data -->
+            </div>
+            <!-- category row like original concept: repeating category pills -->
+            <div class="category-row">
+                <span class="category-badge">🍎 Fruits</span>
+                <span class="category-badge">🥭 Mango</span>
+                <span class="category-badge">🍊 Citrus</span>
+                <span class="category-badge">🥤 Smoothie</span>
+                <span class="category-badge">🧃 Fresh</span>
+                <span class="category-badge">✨ Special</span>
+                <span class="category-badge">🍹 Tropical</span>
+            </div>
+        </div>
+
+        <!-- RIGHT: Billing invoice panel -->
+        <div class="billing-section">
+            <div class="checkout-title">Checkout</div>
+            <div class="bill-table-wrapper">
+                <table class="bill-table" id="billTable">
+                    <thead>
+                        <tr><th>Name</th><th>Qty</th><th>Discount</th><th>Price</th><th></th></tr>
+                    </thead>
+                    <tbody id="billTableBody">
+                        <tr class="empty-cart-row"><td colspan="5" style="text-align:center; padding: 2rem;">No items added</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Global Discount control -->
+            <div class="discount-global">
+                <div class="discount-control">
+                    <label>💸 Discount(%)</label>
+                    <input type="number" id="discountPercentInput" value="10" step="1" min="0" max="100">
+                    <span style="font-size: 0.7rem;">applied to subtotal</span>
+                </div>
+                <div style="font-size:0.8rem; background:#fff1e6; padding:4px 10px; border-radius:30px;">✨ each item has 10% base discount</div>
+            </div>
+
+            <!-- Summary -->
+            <div class="summary-stats" id="summaryStats">
+                <div class="stat-item"><span class="stat-label">Total Save</span><span class="stat-value" id="totalSaveValue">Rs.0.00</span></div>
+                <div class="stat-item"><span class="stat-label">Sub Total</span><span class="stat-value" id="subTotalValue">Rs.0.00</span></div>
+                <div class="stat-item"><span class="stat-label">Total</span><span class="stat-value total-amount" id="totalValue">Rs.0.00</span></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-cancel" id="cancelBillBtn">Cancel Bill</button>
+                <button class="btn btn-hold" id="holdBillBtn">Hold Bill</button>
+                <button class="btn btn-pay" id="payBtn">Pay ✅</button>
+            </div>
+            <div style="font-size: 0.7rem; text-align: right; margin-top: 1rem; color: #94a3b8;">* each item discount 10% | extra discount on total</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // PRODUCT DATA (inspired by mango juice repeated, but include variants)
+    const products = [
+        { id: 1, name: "Mango Juice", price: 500, defaultDiscount: 10 },
+        { id: 2, name: "Mango Juice", price: 500, defaultDiscount: 10 },
+        { id: 3, name: "Mango Juice", price: 500, defaultDiscount: 10 },
+        { id: 4, name: "Orange Juice", price: 480, defaultDiscount: 10 },
+        { id: 5, name: "Papaya Smoothie", price: 550, defaultDiscount: 10 },
+        { id: 6, name: "Pineapple Fresh", price: 520, defaultDiscount: 10 },
+        { id: 7, name: "Berry Blast", price: 590, defaultDiscount: 10 },
+        { id: 8, name: "Mango Lassi", price: 620, defaultDiscount: 10 }
+    ];
+
+    // cart state: each entry { id, name, price, quantity, discountPercent (item-level) }
+    let cart = [];
+
+    // helper to recalc everything and render
+    function recalcAndRender() {
+        // 1. calculate item totals, save, subtotal (before global discount)
+        let subtotalBeforeGlobal = 0;
+        let totalItemDiscount = 0;
+
+        const updatedCart = cart.map(item => {
+            const itemDiscountPercent = item.discountPercent || 10; // default 10 as per design
+            const originalItemPrice = item.price;
+            const discountAmountPerItem = (originalItemPrice * itemDiscountPercent) / 100;
+            const priceAfterItemDiscount = originalItemPrice - discountAmountPerItem;
+            const lineTotalAfterItemDiscount = priceAfterItemDiscount * item.quantity;
+            const lineTotalBeforeDiscount = originalItemPrice * item.quantity;
+            const lineDiscountTotal = lineTotalBeforeDiscount - lineTotalAfterItemDiscount;
+
+            return {
+                ...item,
+                lineDiscountTotal,
+                lineTotalAfterItemDiscount,
+                effectiveUnitPrice: priceAfterItemDiscount
+            };
+        });
+
+        // subtotal AFTER item-level discount (but before global)
+        let subTotalAfterItemDiscount = updatedCart.reduce((sum, i) => sum + i.lineTotalAfterItemDiscount, 0);
+        // total item discount amount (saved from item level)
+        let totalItemSave = updatedCart.reduce((sum, i) => sum + i.lineDiscountTotal, 0);
+
+        // global discount % from input
+        const globalDiscountPercent = parseFloat(document.getElementById('discountPercentInput').value);
+        const globalDiscountValue = isNaN(globalDiscountPercent) ? 0 : (subTotalAfterItemDiscount * globalDiscountPercent) / 100;
+        const finalTotal = subTotalAfterItemDiscount - globalDiscountValue;
+
+        // total saved = item discount + global discount
+        const totalSaved = totalItemSave + globalDiscountValue;
+
+        // update DOM summary
+        document.getElementById('totalSaveValue').innerText = `Rs.${totalSaved.toFixed(2)}`;
+        document.getElementById('subTotalValue').innerText = `Rs.${subTotalAfterItemDiscount.toFixed(2)}`;
+        document.getElementById('totalValue').innerText = `Rs.${finalTotal.toFixed(2)}`;
+
+        // render bill table rows
+        renderBillTable(updatedCart, globalDiscountPercent);
+    }
+
+    function renderBillTable(cartItems, globalDiscountPercentApplied) {
+        const tbody = document.getElementById('billTableBody');
+        if (!cartItems.length) {
+            tbody.innerHTML = `<tr class="empty-cart-row"><td colspan="5" style="text-align:center; padding: 2rem;">No items added</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = '';
+        cartItems.forEach((item, idx) => {
+            const row = tbody.insertRow();
+            // name
+            const nameCell = row.insertCell(0);
+            nameCell.innerText = item.name;
+            nameCell.className = 'item-name-cell';
+            // qty with controls
+            const qtyCell = row.insertCell(1);
+            const qtyWrapper = document.createElement('div');
+            qtyWrapper.className = 'qty-control';
+
+            const minusBtn = document.createElement('button');
+            minusBtn.innerText = '-';
+            minusBtn.className = 'qty-btn';
+            minusBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                changeQuantity(item.id, -1);
+            });
+
+            const qtySpan = document.createElement('span');
+            qtySpan.className = 'qty-number';
+            qtySpan.innerText = item.quantity;
+
+            const plusBtn = document.createElement('button');
+            plusBtn.innerText = '+';
+            plusBtn.className = 'qty-btn';
+            plusBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                changeQuantity(item.id, 1);
+            });
+
+            qtyWrapper.appendChild(minusBtn);
+            qtyWrapper.appendChild(qtySpan);
+            qtyWrapper.appendChild(plusBtn);
+            qtyCell.appendChild(qtyWrapper);
+
+            // discount cell (show item discount %)
+            const discCell = row.insertCell(2);
+            const discSpan = document.createElement('span');
+            discSpan.className = 'discount-badge';
+            discSpan.innerText = `${item.discountPercent || 10}%`;
+            discCell.appendChild(discSpan);
+
+            // price cell: show line total after item discount
+            const priceCell = row.insertCell(3);
+            const linePrice = (item.price * (1 - (item.discountPercent || 10)/100) * item.quantity);
+            priceCell.innerText = `Rs.${linePrice.toFixed(2)}`;
+            priceCell.style.fontWeight = '600';
+
+            // remove action
+            const actionCell = row.insertCell(4);
+            const removeBtn = document.createElement('button');
+            removeBtn.innerText = '✕';
+            removeBtn.className = 'remove-item';
+            removeBtn.addEventListener('click', () => {
+                removeCartItem(item.id);
+            });
+            actionCell.appendChild(removeBtn);
+        });
+    }
+
+    function changeQuantity(productId, delta) {
+        const index = cart.findIndex(i => i.id === productId);
+        if (index !== -1) {
+            const newQty = cart[index].quantity + delta;
+            if (newQty <= 0) {
+                cart.splice(index, 1);
+            } else {
+                cart[index].quantity = newQty;
+            }
+            recalcAndRender();
+        }
+    }
+
+    function removeCartItem(productId) {
+        cart = cart.filter(i => i.id !== productId);
+        recalcAndRender();
+    }
+
+    function addToCart(product) {
+        const existing = cart.find(i => i.id === product.id);
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            cart.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: 1,
+                discountPercent: product.defaultDiscount || 10
+            });
+        }
+        recalcAndRender();
+    }
+
+    // cancel bill: clear cart entirely
+    function cancelBill() {
+        if (cart.length > 0) {
+            cart = [];
+            recalcAndRender();
+            showToast("Bill cancelled", "#ef4444");
+        } else {
+            showToast("Cart already empty", "#f97316");
+        }
+    }
+
+    // hold bill: basically simulate holding - we keep cart, just alert
+    function holdBill() {
+        if (cart.length === 0) {
+            showToast("No items to hold", "#94a3b8");
+            return;
+        }
+        showToast(`Bill held with ${cart.reduce((s,i)=>s+i.quantity,0)} items. You can continue later.`, "#3b82f6");
+        // In real scenario you could store cart to localStorage, but we just keep cart as is to retain state.
+        // But per UI expectations, we just notify.
+    }
+
+    function payBill() {
+        if (cart.length === 0) {
+            showToast("Cart is empty! Add items first.", "#ef4444");
+            return;
+        }
+        const totalSpan = document.getElementById('totalValue').innerText;
+        showToast(`✅ Payment successful! Total ${totalSpan}. Thank you!`, "#16a34a");
+        // After payment clear cart (new transaction)
+        cart = [];
+        recalcAndRender();
+    }
+
+    // simple toast message (temporary)
+    function showToast(msg, bgColor = "#1e293b") {
+        let toast = document.getElementById('dynamicToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'dynamicToast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '30px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.backgroundColor = bgColor;
+            toast.style.color = 'white';
+            toast.style.padding = '12px 24px';
+            toast.style.borderRadius = '40px';
+            toast.style.fontWeight = '500';
+            toast.style.fontSize = '0.85rem';
+            toast.style.zIndex = '9999';
+            toast.style.boxShadow = '0 8px 20px rgba(0,0,0,0.2)';
+            toast.style.backdropFilter = 'blur(2px)';
+            document.body.appendChild(toast);
+        }
+        toast.style.backgroundColor = bgColor;
+        toast.innerText = msg;
+        toast.style.opacity = '1';
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                if (toast.parentNode) toast.remove();
+            }, 400);
+        }, 2000);
+    }
+
+    // Build product grid from products array
+    function buildProductGrid() {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = '';
+        products.forEach(prod => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="product-name">${prod.name}</div>
+                <div class="product-price">Rs.${prod.price}</div>
+                <div style="font-size: 0.65rem; color:#f97316; margin-top: 5px;">🍹 10% off</div>
+            `;
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                addToCart(prod);
+                showToast(`+1 ${prod.name} added`, "#f97316");
+            });
+            grid.appendChild(card);
+        });
+    }
+
+    // Add event listener on global discount input
+    const discountInput = document.getElementById('discountPercentInput');
+    discountInput.addEventListener('input', () => {
+        let val = parseInt(discountInput.value);
+        if (isNaN(val)) val = 0;
+        if (val < 0) discountInput.value = 0;
+        if (val > 100) discountInput.value = 100;
+        recalcAndRender();
+    });
+
+    document.getElementById('cancelBillBtn').addEventListener('click', cancelBill);
+    document.getElementById('holdBillBtn').addEventListener('click', holdBill);
+    document.getElementById('payBtn').addEventListener('click', payBill);
+
+    // initial rendering of demo cart data exactly matching the concept: 3 Mango Juice lines + one extra ?
+    // to match SVG representation: three Mango Juice lines, plus an additional example showing Mango Juice 1 10% etc.
+    // we preset initial cart to showcase similar to svg design: 3 items of Mango Juice plus another Mango Juice separate?
+    // but for consistency we initialize with 4 items (three identical + one extra same product) OR better show three Mango juice entries and another distinct but we keep classic.
+    function setInitialCartDemo() {
+        // exactly representation similar to SVG: Mango Juice repeated, showing quantity 1 each, discount 10%
+        const mangoId = products.find(p => p.name === "Mango Juice")?.id;
+        if (mangoId) {
+            // add 4 rows of Mango Juice as per design (svg had 4 rows shown) OR we add 4 entries for consistency
+            const mangoProduct = products.find(p => p.id === mangoId);
+            if (mangoProduct) {
+                // clear any
+                cart = [];
+                // first three mango
+                for (let i = 0; i < 3; i++) {
+                    cart.push({
+                        id: mangoProduct.id + i*100, // make unique id to avoid merging but we use same id merging if same id? But we need separate lines? we want lines separated but in typical POS quantity combined is better, but SVG showed separate rows each qty=1
+                        originalProductId: mangoProduct.id,
+                        name: mangoProduct.name,
+                        price: mangoProduct.price,
+                        quantity: 1,
+                        discountPercent: 10
+                    });
+                }
+                // fourth mango juice line
+                cart.push({
+                    id: mangoProduct.id + 999,
+                    originalProductId: mangoProduct.id,
+                    name: mangoProduct.name,
+                    price: mangoProduct.price,
+                    quantity: 1,
+                    discountPercent: 10
+                });
+            }
+        }
+        // also add one extra variation to match style? but fine
+        recalcAndRender();
+    }
+
+    buildProductGrid();
+    setInitialCartDemo();
+    // Add additional sync for global discount init
+    recalcAndRender();
+</script>
+</body>
+</html>

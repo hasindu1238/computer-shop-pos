@@ -173,7 +173,7 @@ body{
     color: var(--second-color);
     width: 300px;
     position: absolute;
-    top: 180px;
+    top: 30%;
     margin: 40px;
 }
 
