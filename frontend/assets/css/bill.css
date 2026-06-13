@@ -27,7 +27,7 @@ body{
 .checkout-side{
     position: relative;
     min-width: 380px;
-    width: 25rem;
+    width: 26rem;
     height: calc(100vh - 40px);
     margin: 20px;
     display: block;
@@ -130,6 +130,55 @@ body{
     font-size: 17px;
     
 }
+
+.remove-item{
+    background-color: white;
+    border:none;
+    margin: 8px;
+}
+
+#billTableBody{
+    font-weight: 550;
+    font-size: 15px;
+}
+
+.qty-btn{
+    width: 18px;
+    height: 18px;
+    margin: 0 7px;
+    border-radius: 50%;
+    border:none;
+    background-color: white;
+        
+}
+.qty-btn.minus{
+    color: red;
+}
+.qty-btn.plus{
+    color: var(--primary-color);
+}
+
+.qty-btn.minus:hover{
+    background-color: red;
+    color: white;
+}
+
+.qty-btn.plus:hover{
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.discount-badge{
+    margin-left: 34px;
+}
+
+.qty-control{
+    background-color: #eeeeee;
+    padding: 4px 0;
+    border-radius: 10px;
+}
+
+
 
 
 /*item section*/
