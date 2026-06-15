@@ -254,5 +254,7 @@ function addToCart(product) {
     recalcAndRender();
 }
 
+
+
 // initial render
 recalcAndRender();
