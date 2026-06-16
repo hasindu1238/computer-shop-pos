@@ -16,9 +16,14 @@
             <!--Side bar-->
             <aside class="sidebar" id="sidebarNav">
                 <div class="sidebar-inner">
-                    <div class="logo-area">
-                        <h2><i class="fas fa-boxes"></i>POS</h2>
-                        <p>Admin Panel V1.0</p>
+                    <div class="toggle">
+                        <div class="logo-area">
+                            <h2><i class="fas fa-boxes"></i>POS</h2>
+                            <p>Admin Panel V1.0</p>
+                        </div>
+                         <button class="toggle-nav-btn" id="toggleNavbarBtn" title="Hide/Unhide Navigation Bar">
+                            <i class="fas fa-bars"></i>
+                        </button>
                     </div>
                     <div class="navbar-links">
                         <div class="nav-item active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div>
@@ -29,6 +34,50 @@
                     </div>
                 </div>
             </aside>
+            <main class="main-content">
+                <div class="top-bar">
+                    <div class="page-header">
+                        <h1><i class="fas fa-cube"></i> Product Management</h1>
+                        <button class="add-item-btn" id="openAddModalBtn"><i class="fas fa-plus-circle"></i> Add New Item</button>
+                    </div>
+                </div>
+                <!--Product table-->
+                <div class="card-table">
+                    <table class="product-table" id="productTable">
+                        <thead>
+                        <tr>
+                            <th>PRODUCT ID</th><th>IMAGE</th><th>NAME</th><th>CATEGORY</th><th>UNIT</th><th>BRAND</th><th>COST PRICE</th><th>SELLING PRICE</th><th>BARCODE</th><th>STATUS</th><th>ACTIONS</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+        <!-- Modal for Add / Edit Product -->
+
+        <div id="productModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Add New Item</h3>
+                    <button class="close-modal" id="closeModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-field"><label>Product Name *</label><input type="text" id="productName" placeholder="e.g. Organic Coffee"></div>
+                    <div class="form-field"><label>Category *</label><input type="text" id="category" placeholder="e.g. Electronics"></div>
+                    <div class="form-field"><label>Unit </label><input type="text" id="unit" placeholder="e.g. kg/pcs"></div>
+                    <div class="form-field"><label>Brand</label><input type="text" id="brand" placeholder="e.g. Munchee/Maliban"></div>
+                    <div class="form-field"><label>Cost Price(Rs.)</label><input type="text" id="costprice" placeholder="e.g. 150"></div>
+                    <div class="form-field"><label>Selling Price(Rs.)</label><input type="text" id="sellingprice" placeholder="e.g. 200"></div>
+                    <div class="form-field"><label>Barcode</label><input type="text" id="barcode" placeholder="e.g. 12345678"></div>
+                    <div class="form-field"><label>Status</label><select id="status"><option value="Active">Active</option><option value="Inactive">Inactive</option></select></div>
+                    <div class="form-field full-width" style="font-size:12px; color:#6c757d;"><i class="fas fa-info-circle"></i> Product image uses placeholder icon</div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="cancelModalBtn">Cancel</button>
+                    <button class="btn-primary" id="saveProductBtn">Save Product</button>
+                </div>
+            </div>
         </div>
         <script src="../../assets/js/product.js"></script>
     </body>
