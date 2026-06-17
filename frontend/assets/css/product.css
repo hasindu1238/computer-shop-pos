@@ -254,8 +254,8 @@ body{
 
 /* MODAL STYLES */
 .modal{
-    /*display: none;
-    position: fixed;*/
+    display: none;
+    position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
     background: rgba(0,0,0,0.5);
@@ -375,3 +375,5 @@ body{
       .modal-body { grid-template-columns: 1fr; }
       .form-field.full-width { grid-column: span 1; }
     }
+
+    
