@@ -55,7 +55,7 @@ function renderTable(){
     tbody.innerHTML = products.map(product =>`
         <tr>
             <td>
-                <span class="brand-chip" style="background:#eef2ff;">
+                <span class="brand-chip" style="background: #e9fff0;">
                     ${escapeHtml(product.id)}
                 </span>
             </td>
@@ -64,8 +64,8 @@ function renderTable(){
             <td>${escapeHtml(product.category)}</td>
             <td>${escapeHtml(product.unit || '-')}</td>
             <td>${escapeHtml(product.brand || '-')}</td>
-            <td>$${parseFloat(product.costPrice || 0).toFixed(2)}</td>
-            <td>$${parseFloat(product.sellingPrice || 0).toFixed(2)}</td>
+            <td>Rs.${parseFloat(product.costPrice || 0).toFixed(2)}</td>
+            <td>Rs.${parseFloat(product.sellingPrice || 0).toFixed(2)}</td>
             <td><span style="font-family: monospace;">${escapeHtml(product.barcode || '-')}</span></td>
             <td><span class="status-badge" style="${product.status === 'Inactive' ? 'background:#fee2e2; color:#b91c1c;' : ''}">${product.status}</span></td>
             <td class="action-icons">

@@ -362,8 +362,8 @@ body{
 }
 
 .btn-secondary { 
-    background: #f1f5f9;
-    color: #334155; }
+    background: #f1f9f3;
+    color: #345533; }
 
 .btn-primary { 
     background: #00a063;
@@ -382,7 +382,7 @@ body{
 
 
 .brand-chip { 
-    background: #eef2ff;
+    background: #eeffef;
     padding: 4px 10px;
     border-radius: 40px;
     font-size: 0.75rem;
@@ -400,6 +400,39 @@ body{
     white-space: nowrap;
     opacity: 0;
     transition: 0.1s;
+    }
+
+.product-img-placeholder {
+      width: 40px;
+      height: 40px;
+      background: #efffee;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-color);
+      font-size: 1.2rem;
+    }
+
+.action-icons i {
+      font-size: 1.2rem;
+      margin: 0 6px;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+
+.action-icons .fa-edit { color: var(--primary-color) }
+.action-icons .fa-trash-alt { color: #ef4444; }
+.action-icons i:hover { opacity: 0.7; transform: scale(1.05); }
+
+.status-badge {
+      background: #dcfce7;
+      color: #15803d;
+      padding: 6px 12px;
+      border-radius: 100px;
+      font-weight: 600;
+      font-size: 0.7rem;
+      display: inline-block;
     }
 
     
