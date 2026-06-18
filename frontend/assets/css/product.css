@@ -376,4 +376,30 @@ body{
       .form-field.full-width { grid-column: span 1; }
     }
 
+.empty-row td { 
+    text-align: center;
+    padding: 48px; color: #64748b; }
+
+
+.brand-chip { 
+    background: #eef2ff;
+    padding: 4px 10px;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    display: inline-block; }
+
+/* Tooltip / floating hint */
+.toggle-hint {
+    position: absolute;
+    background: #1e293b;
+    color: white;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 20px;
+    pointer-events: none;
+    white-space: nowrap;
+    opacity: 0;
+    transition: 0.1s;
+    }
+
     

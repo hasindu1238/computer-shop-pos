@@ -93,3 +93,123 @@ function deleteProductById(id){
         renderTable();
     }
 }
+
+function openAddModal() {
+    editingId = null;
+    document.getElementById('modalTitle').innerText = 'Add New Item';
+    document.getElementById('productName').value = '';
+    document.getElementById('category').value = '';
+    document.getElementById('unit').value = '';
+    document.getElementById('brand').value = '';
+    document.getElementById('costPrice').value = '';
+    document.getElementById('sellingPrice').value = '';
+    document.getElementById('barcode').value = '';
+    document.getElementById('status').value = 'Active';
+    document.getElementById('productModal').style.display = 'flex';
+  }
+
+function openEditModal(id) {
+    const product = products.find(p => p.id === id);
+    if(!product) return;
+    editingId = id;
+    document.getElementById('modalTitle').innerText = 'Edit Product';
+    document.getElementById('productName').value = product.name || '';
+    document.getElementById('category').value = product.category || '';
+    document.getElementById('unit').value = product.unit || '';
+    document.getElementById('brand').value = product.brand || '';
+    document.getElementById('costPrice').value = product.costPrice ?? '';
+    document.getElementById('sellingPrice').value = product.sellingPrice ?? '';
+    document.getElementById('barcode').value = product.barcode || '';
+    document.getElementById('status').value = product.status || 'Active';
+    document.getElementById('productModal').style.display = 'flex';
+  }
+
+function saveProductFromModal() {
+    const name = document.getElementById('productName').value.trim();
+    const category = document.getElementById('category').value.trim();
+    const unit = document.getElementById('unit').value.trim();
+    const brand = document.getElementById('brand').value.trim();
+    let costPrice = parseFloat(document.getElementById('costPrice').value);
+    let sellingPrice = parseFloat(document.getElementById('sellingPrice').value);
+    const barcode = document.getElementById('barcode').value.trim();
+    const status = document.getElementById('status').value;
+    if(!name || !category) { alert('Product Name and Category are required!'); return; }
+    if(isNaN(costPrice)) costPrice = 0;
+    if(isNaN(sellingPrice)) sellingPrice = 0;
+    const imageIconsList = ['fa-box', 'fa-cube', 'fa-archive', 'fa-tag', 'fa-apple', 'fa-mobile-alt', 'fa-laptop', 'fa-tshirt'];
+    const randomIcon = imageIconsList[Math.floor(Math.random() * imageIconsList.length)];
+    if(editingId === null) {
+      const newProduct = { id: generateProductId(), name, category, unit: unit || 'pcs', brand: brand || 'Generic', costPrice, sellingPrice, barcode: barcode || 'N/A', status, imageIcon: randomIcon };
+      products.unshift(newProduct);
+    } else {
+      const index = products.findIndex(p => p.id === editingId);
+      if(index !== -1) {
+        products[index] = { ...products[index], name, category, unit: unit || products[index].unit, brand: brand || products[index].brand, costPrice, sellingPrice, barcode: barcode || products[index].barcode, status };
+      }
+    }
+    renderTable();
+    closeModal();
+  }
+
+function closeModal() { 
+    document.getElementById('productModal').style.display = 'none';
+    editingId = null; }
+
+// ----- SIDEBAR TOGGLE (HIDE / UNHIDE) -----
+  const sidebar = document.getElementById('sidebarNav');
+  const toggleBtn = document.getElementById('toggleNavbarBtn');
+
+  // Load preference from localStorage (optional persistence)
+  let isNavHidden = false; //default visble
+function setNavbarState(hide){
+    if(hide){
+        sidebar.classList.add('hidden-nav');
+        isNavHidden = true;
+        localStorage.setItem('navbarHidden','true');
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';  // indicate hidden -> show hint
+        toggleBtn.title = "Unhide Navigation Bar";
+    } else {
+        sidebar.classList.remove('hidden-nav');
+        isNavHidden = false;
+        localStorage.setItem('navbarHidden', 'false');
+        toggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
+        toggleBtn.title = "Hide Navigation Bar";
+    }
+  }
+
+function toggleNavbar() {
+    setNavbarState(!isNavHidden);
+  }
+
+const savedState = localStorage.getItem('navbarHidden');
+if (savedState === 'true'){
+    setNavbarState(true);
+} else if (savedState === 'false'){
+    setNavbarState(false);
+} else{
+    setNavbarState(false); // default visible
+}
+
+toggleBtn.addEventListener('click', toggleNavbar);
+
+// modal event listeners
+document.getElementById('openAddModalBtn').addEventListener('click', openAddModal);
+document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+document.getElementById('saveProductBtn').addEventListener('click', saveProductFromModal);
+window.addEventListener('click', (e) => { 
+    const modal = document.getElementById('productModal');
+    if(e.target === modal) closeModal(); });
+
+// Sidebar navigation highlight, plus demo message (non-destructive)
+const navItems = document.querySelectorAll('.nav-item');
+navItems.forEach(item => {
+    item.addEventListener('click', function() {
+      navItems.forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
+      if(this.innerText.includes('Products')) alert('You are already on Product Management view.');
+      else alert(`Demo: ${this.innerText} section (Product Management remains active).`);
+    });
+  });
+
+initData();
