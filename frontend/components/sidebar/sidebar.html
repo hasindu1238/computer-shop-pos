@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <title>sidebar</title>
+        <link rel="stylesheet" href="sidebar.css">
+        <!-- Google Fonts: Inter -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+        <!-- Font Awesome 6 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <!--Link google icons-->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    </head>
+    <body>
+        <aside class="sidebar" id="sidebarNav">
+            <div class="sidebar-inner">
+                <div class="toggle">
+                    <div class="logo-area">
+                        <h2><i class="fas fa-boxes"></i>POS</h2>
+                        <p>Admin Panel V1.0</p>    
+                    </div>
+                    <button class="sidebar-toggle">
+                        <span class="material-symbols-rounded">
+                                    keyboard_arrow_left
+                        </span>
+                    </button>
+                         
+                </div>
+                <div class="navbar-links">
+                    <div class="nav-item "><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div>
+                    <a href="../../pages/billing/pay.html"><div class="nav-item"><i class="fas fa-cash-register"></i><span>Cashier</span></div></a>
+                    <a href="../../pages/products/product.html"><div class="nav-item active"><i class="fas fa-tags"></i><span>Products</span></div></a>
+                    <div class="nav-item"><i class="fas fa-warehouse"></i><span>Inventory</span></div>
+                    <div class="nav-item"><i class="fas fa-sliders-h"></i><span>Setting</span></div>
+                    <div class="nav-logout">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M5 22C4.44772 22 4 21.5523 4 21V3C4 2.44772 4.44772 2 5 2H19C19.5523 2 20 2.44772 20 3V6H18V4H6V20H18V18H20V21C20 21.5523 19.5523 22 19 22H5ZM18 16V13H11V11H18V8L23 12L18 16Z"></path></svg>
+                    <span>Log Out</span>
+                    </div>
+                </div>
+                    
+            </div>
+</aside>
+<script>
+    
+// Sidebar navigation highlight, plus demo message (non-destructive)
+const navItems = document.querySelectorAll('.nav-item');
+navItems.forEach(item => {
+    item.addEventListener('click', function() {
+      navItems.forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
+      if(this.innerText.includes('Products')) alert('You are already on Product Management view.');
+      else alert(`Demo: ${this.innerText} section (Product Management remains active).`);
+    });
+  });
+</script>
+</body>
+</html>

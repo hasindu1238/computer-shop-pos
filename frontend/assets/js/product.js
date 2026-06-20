@@ -156,41 +156,34 @@ function closeModal() {
     editingId = null; }
 
 // ----- SIDEBAR TOGGLE (HIDE / UNHIDE) -----
-  const sidebar = document.getElementById('sidebarNav');
-  const toggleBtn = document.getElementById('toggleNavbarBtn');
+fetch('../../components/sidebar/sidebar.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('navbar-container').innerHTML = data;
 
-  // Load preference from localStorage (optional persistence)
-  let isNavHidden = false; //default visble
-function setNavbarState(hide){
-    if(hide){
-        sidebar.classList.add('hidden-nav');
-        isNavHidden = true;
-        localStorage.setItem('navbarHidden','true');
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';  // indicate hidden -> show hint
-        toggleBtn.title = "Unhide Navigation Bar";
-    } else {
-        sidebar.classList.remove('hidden-nav');
-        isNavHidden = false;
-        localStorage.setItem('navbarHidden', 'false');
-        toggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
-        toggleBtn.title = "Hide Navigation Bar";
-    }
-  }
-
-function toggleNavbar() {
-    setNavbarState(!isNavHidden);
-  }
-
-const savedState = localStorage.getItem('navbarHidden');
-if (savedState === 'true'){
-    setNavbarState(true);
-} else if (savedState === 'false'){
-    setNavbarState(false);
-} else{
-    setNavbarState(false); // default visible
+        initializeNavbar();
+    });
+    
+function initializeNavbar() {
+    document.querySelector('.sidebar-toggle')
+        ?.addEventListener('click', () => {
+            document.querySelector('.sidebar')
+                .classList.toggle('collapsed');
+        });
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+    item.addEventListener('click', function() {
+      navItems.forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
+      if(this.innerText.includes('Products')) alert('You are already on Product Management view.');
+      else alert(`Demo: ${this.innerText} section (Product Management remains active).`);
+    });
+  });
+    
 }
 
-toggleBtn.addEventListener('click', toggleNavbar);
+
+
 
 // modal event listeners
 document.getElementById('openAddModalBtn').addEventListener('click', openAddModal);
@@ -202,14 +195,6 @@ window.addEventListener('click', (e) => {
     if(e.target === modal) closeModal(); });
 
 // Sidebar navigation highlight, plus demo message (non-destructive)
-const navItems = document.querySelectorAll('.nav-item');
-navItems.forEach(item => {
-    item.addEventListener('click', function() {
-      navItems.forEach(nav => nav.classList.remove('active'));
-      this.classList.add('active');
-      if(this.innerText.includes('Products')) alert('You are already on Product Management view.');
-      else alert(`Demo: ${this.innerText} section (Product Management remains active).`);
-    });
-  });
+
 
 initData();
