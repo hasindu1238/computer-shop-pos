@@ -1,7 +1,32 @@
 {
+  "name": "computer-shop-pos",
+  "version": "1.0.0",
+  "description": "pos system",
+  "homepage": "https://github.com/hasindu1238/computer-shop-pos#readme",
+  "bugs": {
+    "url": "https://github.com/hasindu1238/computer-shop-pos/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hasindu1238/computer-shop-pos.git"
+  },
+  "license": "ISC",
+  "author": "hasindu lakshith",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
+    
+  },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "body-parser": "^2.3.0",
     "express": "^5.2.1",
     "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

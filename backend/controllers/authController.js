@@ -1,14 +1,41 @@
-const { use } = require("react");
-const User = require("../models/userModel");
+import bcrypt from "bcrypt";
+import { createUser,findUserByUsername} from "../models/userModel.js";
 
-exports.login = (req, res) => {
+export const register = async (req, res) => {
     const { username, password} = req.body;
 
-    User.findUser(username, (err, user) => {
-        if (user && user.password === password){
-            res.send("Login Success");
-        } else {
-            res.send("Invalid Credentials");
-        }
+    const hasedPassword = await bcrypt.hash(password, 10);
+
+    await createUser (
+        username,
+        hasedPassword,
+    );
+
+    res.status(200).json({
+        message: "Register Succesfull"
     })
+}
+
+export const login = async(req, res) => {
+    const {username, password} = req.body;
+
+
+const user = await findUserByUsername(username);
+
+if(!user) {
+    return res.status(401).json({
+        message: "User not found"
+    });
+}
+
+const match = await bcrypt.compare(
+    password,
+    user.password
+);
+
+if(!match) {
+    return res.status(401).json({
+        message: "Invalid password"
+    });
+}
 }

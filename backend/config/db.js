@@ -1,33 +1,28 @@
-const sqlite3 = require("sqlite3").verbose();
+import sqlite3 from "sqlite3";
+import path from "path";
 
-const db = new sqlite3.Database("./database.sqlite", (err) => {
+const dbPath = path.join(process.cwd(), "database", "database.db");
+
+
+
+
+const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
-        console.error(err.message);
+        console.log("DB Error :", err.message);
     } else {
-        console.log("Connected to SQLite");
+        console.log("SQLite Connected");
     }
-});
+})
+
+
+export default db;
 
 // Create tables when app starts
 db.run(`
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        password TEXT
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
     )
 `);
 
-db.run(
-    `INSERT INTO users (username, password)
-     VALUES (?, ?)`,
-    ["admin", "1234"],
-    (err) => {
-        if (err) {
-            console.log("User already exists");
-        } else {
-            console.log("Sample user added");
-        }
-    }
-);
-
-module.exports = db;
