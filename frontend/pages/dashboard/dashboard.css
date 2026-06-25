@@ -204,3 +204,53 @@ body{
       color: #5d6f88;
       font-size: 0.75rem;
     }
+
+/*transaction*/
+
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    text-align: center;
+}
+.transaction-table th{
+    color: #5d6f88;
+    font-size: 0.7rem;
+    border-bottom: 1px solid #eef1f7;
+    padding-bottom: 10px;
+    letter-spacing: 0.03rem;    
+}
+
+.transaction-table td {
+      padding: 0.7rem 0.2rem 0.7rem 0;
+      border-bottom: 1px solid #f0f3f9;
+      font-weight: 500;
+      color: #17212e;
+    }
+
+/* out of stock list */
+.stock-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+.stock-item{
+    display: flex;
+    flex-direction: column;
+    padding: 0.4rem 0.2rem;
+    border-bottom: 1px solid #f0f3f9;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.stock-item .balance {
+      background: #ffedee;
+      color: #b00020;
+      font-weight: 500;
+      padding: 0.1rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+    }

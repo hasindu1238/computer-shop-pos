@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Management</title>
+    <link rel="stylesheet" href="stock-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="stock-container">
+        <!-- Header -->
+        <header class="stock-header">
+            <div class="header-left">
+                <h1><i class="fas fa-warehouse"></i> Stock Management</h1>
+                <div class="stock-summary">
+                    <span class="summary-item">
+                        <i class="fas fa-cubes"></i>
+                        Total Products: <strong id="totalProducts">0</strong>
+                    </span>
+                    <span class="summary-item warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Low Stock: <strong id="lowStockCount">0</strong>
+                    </span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="openAddStockModal()">
+                    <i class="fas fa-plus-circle"></i> Add Stock
+                </button>
+                <button class="btn btn-secondary" onclick="openAdjustStockModal()">
+                    <i class="fas fa-edit"></i> Adjust Stock
+                </button>
+            </div>
+        </header>
+
+        <!-- Search and Filter Bar -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search products by name or SKU..." onkeyup="filterProducts()">
+            </div>
+            <div class="filter-options">
+                <select id="categoryFilter" onchange="filterProducts()">
+                    <option value="all">All Categories</option>
+                </select>
+                <select id="stockFilter" onchange="filterProducts()">
+                    <option value="all">All Stock Status</option>
+                    <option value="in-stock">In Stock</option>
+                    <option value="low-stock">Low Stock</option>
+                    <option value="out-of-stock">Out of Stock</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="table-container">
+            <table id="stockTable">
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Current Stock</th>
+                        <th>Status</th>
+                        <th>Last Updated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="stockTableBody">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="fas fa-search"></i>
+                <p>No products found</p>
+            </div>
+        </div>
+
+        <!-- Quick Stock Overview Cards -->
+        <div class="stock-cards">
+            <div class="stock-card" onclick="filterByStatus('out-of-stock')">
+                <div class="card-icon danger">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Out of Stock</h3>
+                    <p id="outOfStockCount">0</p>
+                </div>
+            </div>
+            <div class="stock-card" onclick="filterByStatus('low-stock')">
+                <div class="card-icon warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Low Stock</h3>
+                    <p id="lowStockCardCount">0</p>
+                </div>
+            </div>
+            <div class="stock-card" onclick="filterByStatus('in-stock')">
+                <div class="card-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="card-info">
+                    <h3>In Stock</h3>
+                    <p id="inStockCount">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Stock Modal -->
+    <div id="addStockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Add Stock</h2>
+                <span class="close" onclick="closeAddStockModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addStockForm" onsubmit="addStock(event)">
+                    <div class="form-group">
+                        <label for="addProduct">Select Product *</label>
+                        <select id="addProduct" required onchange="updateProductInfo('add')">
+                            <option value="">Choose a product...</option>
+                        </select>
+                    </div>
+                    <div class="product-preview" id="addProductPreview" style="display: none;">
+                        <div class="preview-item">
+                            <span>Current Stock:</span>
+                            <strong id="addCurrentStock">0</strong>
+                        </div>
+                        <div class="preview-item">
+                            <span>SKU:</span>
+                            <strong id="addProductSku">-</strong>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="addQuantity">Quantity to Add *</label>
+                        <div class="quantity-input">
+                            <button type="button" class="qty-btn" onclick="changeQuantity('addQuantity', -1)">-</button>
+                            <input type="number" id="addQuantity" min="1" value="1" required>
+                            <button type="button" class="qty-btn" onclick="changeQuantity('addQuantity', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="addReference">Reference Number</label>
+                        <input type="text" id="addReference" placeholder="e.g., PO-2024-001">
+                    </div>
+                    <div class="form-group">
+                        <label for="addNotes">Notes</label>
+                        <textarea id="addNotes" rows="3" placeholder="Optional notes..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Stock
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeAddStockModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adjust Stock Modal -->
+    <div id="adjustStockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Adjust Stock</h2>
+                <span class="close" onclick="closeAdjustStockModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="adjustStockForm" onsubmit="adjustStock(event)">
+                    <div class="form-group">
+                        <label for="adjustProduct">Select Product *</label>
+                        <select id="adjustProduct" required onchange="updateProductInfo('adjust')">
+                            <option value="">Choose a product...</option>
+                        </select>
+                    </div>
+                    <div class="product-preview" id="adjustProductPreview" style="display: none;">
+                        <div class="preview-item">
+                            <span>Current Stock:</span>
+                            <strong id="adjustCurrentStock">0</strong>
+                        </div>
+                        <div class="preview-item">
+                            <span>SKU:</span>
+                            <strong id="adjustProductSku">-</strong>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="adjustmentType">Adjustment Type</label>
+                        <select id="adjustmentType" onchange="handleAdjustmentType()">
+                            <option value="add">Add Stock</option>
+                            <option value="remove">Remove Stock</option>
+                            <option value="set">Set Exact Quantity</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="adjustQuantity" id="adjustQuantityLabel">Quantity *</label>
+                        <div class="quantity-input">
+                            <button type="button" class="qty-btn" onclick="changeQuantity('adjustQuantity', -1)">-</button>
+                            <input type="number" id="adjustQuantity" min="1" value="1" required>
+                            <button type="button" class="qty-btn" onclick="changeQuantity('adjustQuantity', 1)">+</button>
+                        </div>
+                        <small class="help-text" id="maxStockInfo" style="display: none;">
+                            Current stock: <strong id="maxStockValue">0</strong>
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="adjustReference">Reference Number</label>
+                        <input type="text" id="adjustReference" placeholder="e.g., ADJ-2024-001">
+                    </div>
+                    <div class="form-group">
+                        <label for="adjustNotes">Notes</label>
+                        <textarea id="adjustNotes" rows="3" placeholder="Reason for adjustment..."></textarea>
+                    </div>
+                    <div class="new-stock-preview" id="newStockPreview" style="display: none;">
+                        <div class="preview-box">
+                            <span>New Stock Level:</span>
+                            <strong id="newStockLevel">0</strong>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Adjustment
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeAdjustStockModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message Toast -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="stock-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .payment-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #1a237e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8eaf6;
+            text-align: center;
+        }
+
+        .cart-summary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e8eaf6;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .total-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a237e;
+            padding: 15px 0;
+            border-top: 2px solid #1a237e;
+            margin-top: 10px;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .payment-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .payment-btn:hover {
+            border-color: #1a237e;
+            background: #e8eaf6;
+        }
+
+        .payment-btn.selected {
+            border-color: #1a237e;
+            background: #1a237e;
+            color: white;
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .pay-btn:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        }
+
+        .pay-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .message.error {
+            display: block;
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #1a237e;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .amount-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a237e;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .balance-display {
+            font-size: 20px;
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 6px;
+            color: #2e7d32;
+        }
+
+        .modal .btn-success {
+            width: 100%;
+            padding: 12px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .modal .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        /* Receipt Styles */
+        .receipt {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border: 1px dashed #999;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .receipt h4 {
+            text-align: center;
+            color: #1a237e;
+            margin-bottom: 10px;
+        }
+
+        .receipt-line {
+            border-top: 1px dashed #999;
+            margin: 10px 0;
+        }
+
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+        }
+
+        .receipt-total {
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        .receipt-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .receipt-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-print {
+            background: #1a237e;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background: #0d1445;
+        }
+
+        .btn-close {
+            background: #546e7a;
+            color: white;
+        }
+
+        .btn-close:hover {
+            background: #37474f;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .receipt, .receipt * {
+                visibility: visible;
+            }
+            .receipt {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                border: none;
+                box-shadow: none;
+            }
+            .receipt-actions {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h2>💳 Payment System</h2>
+        
+        <!-- Cart Summary -->
+        <div class="cart-summary">
+            <h3 style="margin-bottom: 10px; color: #333;">Order Summary</h3>
+            <div id="cartItems">
+                <!-- Dynamic cart items -->
+            </div>
+            <div class="total-display">
+                <span>Total:</span>
+                <span id="totalAmount">$0.00</span>
+            </div>
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="payment-methods">
+            <button class="payment-btn" onclick="selectPayment('cash')">💵 Cash</button>
+            <button class="payment-btn" onclick="selectPayment('card')">💳 Card</button>
+            <button class="payment-btn" onclick="selectPayment('qr')">📱 QR</button>
+        </div>
+
+        <!-- Pay Button -->
+        <button class="pay-btn" id="payBtn" onclick="processPayment()" disabled>
+            Pay Now
+        </button>
+
+        <!-- Message Display -->
+        <div id="message" class="message"></div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Payment</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div id="receiptModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3>🧾 Receipt</h3>
+                <span class="close" onclick="closeReceipt()">&times;</span>
+            </div>
+            <div id="receiptBody">
+                <!-- Dynamic receipt content -->
+            </div>
+            <div class="receipt-actions">
+                <button class="btn-print" onclick="printReceipt()">🖨️ Yes, Print</button>
+                <button class="btn-close" onclick="closeReceipt()">No, Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== STATE ==========
+        let cart = [
+            { name: 'Coffee', price: 4.50, qty: 2, subtotal: 9.00 },
+            { name: 'Sandwich', price: 8.99, qty: 1, subtotal: 8.99 },
+            { name: 'Cake', price: 5.50, qty: 1, subtotal: 5.50 }
+        ];
+        let selectedPayment = null;
+        let currentReceipt = null;
+
+        // ========== INITIALIZE ==========
+        function init() {
+            renderCart();
+            updatePayButton();
+        }
+
+        // ========== CART FUNCTIONS ==========
+        function renderCart() {
+            const container = document.getElementById('cartItems');
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center;">Cart is empty</p>';
+                document.getElementById('totalAmount').textContent = '$0.00';
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <span>${item.name} x ${item.qty}</span>
+                    <span>$${item.subtotal.toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            const total = getTotal();
+            document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function getTotal() {
+            return cart.reduce((sum, item) => sum + item.subtotal, 0);
+        }
+
+        function updatePayButton() {
+            const payBtn = document.getElementById('payBtn');
+            if (cart.length === 0) {
+                payBtn.disabled = true;
+                payBtn.textContent = 'Cart Empty';
+            } else if (!selectedPayment) {
+                payBtn.disabled = true;
+                payBtn.textContent = 'Select Payment Method';
+            } else {
+                payBtn.disabled = false;
+                payBtn.textContent = `Pay $${getTotal().toFixed(2)}`;
+            }
+        }
+
+        // ========== PAYMENT METHODS ==========
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            document.getElementById('message').className = 'message';
+            document.getElementById('message').textContent = '';
+            updatePayButton();
+        }
+
+        function processPayment() {
+            if (cart.length === 0) {
+                showMessage('Cart is empty!', 'error');
+                return;
+            }
+
+            if (!selectedPayment) {
+                showMessage('Please select a payment method.', 'error');
+                return;
+            }
+
+            const total = getTotal();
+            const modal = document.getElementById('paymentModal');
+            const modalBody = document.getElementById('modalBody');
+
+            if (selectedPayment === 'cash') {
+                modalBody.innerHTML = `
+                    <div class="amount-display">Total: $${total.toFixed(2)}</div>
+                    <label>Amount Given by Customer:</label>
+                    <input type="number" id="cashAmount" placeholder="Enter amount" step="0.01" />
+                    <button class="btn-success" onclick="processCashPayment()">
+                        Process Cash Payment
+                    </button>
+                `;
+                document.getElementById('modalTitle').textContent = '💵 Cash Payment';
+            } else if (selectedPayment === 'card') {
+                modalBody.innerHTML = `
+                    <div class="amount-display">Total: $${total.toFixed(2)}</div>
+                    <label>Card Number (last 4 digits):</label>
+                    <input type="text" id="cardNumber" placeholder="Enter last 4 digits" maxlength="4" />
+                    <button class="btn-success" onclick="processCardPayment()">
+                        Process Card Payment
+                    </button>
+                `;
+                document.getElementById('modalTitle').textContent = '💳 Card Payment';
+            } else if (selectedPayment === 'qr') {
+                modalBody.innerHTML = `
+                    <div class="amount-display">Total: $${total.toFixed(2)}</div>
+                    <div style="text-align: center; padding: 20px; background: #f5f5f5; border-radius: 8px; margin: 15px 0;">
+                        <div style="font-size: 80px; margin-bottom: 10px;">📱</div>
+                        <div style="font-family: monospace; background: white; padding: 15px; border-radius: 4px; display: inline-block;">
+                            QR Code Generated
+                        </div>
+                        <p style="margin-top: 10px; font-size: 12px; color: #666;">Scan with your payment app</p>
+                    </div>
+                    <button class="btn-success" onclick="processQRPayment()">
+                        Process QR Payment
+                    </button>
+                `;
+                document.getElementById('modalTitle').textContent = '📱 QR Payment';
+            }
+
+            modal.style.display = 'block';
+        }
+
+        // ========== CASH PAYMENT ==========
+        function processCashPayment() {
+            const amountInput = document.getElementById('cashAmount');
+            const amountGiven = parseFloat(amountInput.value);
+            const total = getTotal();
+
+            if (isNaN(amountGiven) || amountGiven <= 0) {
+                alert('Please enter a valid amount.');
+                return;
+            }
+
+            if (amountGiven < total) {
+                alert(`Insufficient amount! Need $${(total - amountGiven).toFixed(2)} more.`);
+                return;
+            }
+
+            const balance = amountGiven - total;
+            
+            // Generate receipt
+            generateReceipt('Cash', { amountGiven, balance });
+            
+            // Show success
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
+                    <h3>Payment Successful!</h3>
+                    <div class="balance-display">
+                        <div>Amount Given: $${amountGiven.toFixed(2)}</div>
+                        <div style="font-size: 28px; margin-top: 5px;">Balance: $${balance.toFixed(2)}</div>
+                    </div>
+                    <button class="btn-success" onclick="closeModalAndShowReceipt()" style="margin-top: 15px;">
+                        View Receipt
+                    </button>
+                </div>
+            `;
+        }
+
+        // ========== CARD PAYMENT ==========
+        function processCardPayment() {
+            const cardInput = document.getElementById('cardNumber');
+            const cardLast4 = cardInput.value.trim();
+
+            if (!cardLast4 || cardLast4.length < 4) {
+                alert('Please enter the last 4 digits of the card.');
+                return;
+            }
+
+            // Simulate processing
+            setTimeout(() => {
+                generateReceipt('Card', { cardLast4 });
+                
+                const modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
+                        <h3>Payment Successful!</h3>
+                        <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                            <div>Card ending in ****${cardLast4}</div>
+                            <div style="font-size: 24px; margin-top: 5px;">$${getTotal().toFixed(2)} charged</div>
+                        </div>
+                        <button class="btn-success" onclick="closeModalAndShowReceipt()" style="margin-top: 15px;">
+                            View Receipt
+                        </button>
+                    </div>
+                `;
+            }, 1500);
+        }
+
+        // ========== QR PAYMENT ==========
+        function processQRPayment() {
+            const total = getTotal();
+            
+            // Simulate QR processing
+            setTimeout(() => {
+                generateReceipt('QR', { qrData: `PAY_${total}_${Date.now()}` });
+                
+                const modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
+                        <h3>QR Payment Successful!</h3>
+                        <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                            <div style="font-size: 24px;">$${total.toFixed(2)} paid</div>
+                            <div style="font-size: 12px; color: #666; margin-top: 5px;">QR Payment Processed</div>
+                        </div>
+                        <button class="btn-success" onclick="closeModalAndShowReceipt()" style="margin-top: 15px;">
+                            View Receipt
+                        </button>
+                    </div>
+                `;
+            }, 1500);
+        }
+
+        // ========== RECEIPT GENERATION ==========
+        function generateReceipt(method, details) {
+            const now = new Date();
+            const date = now.toLocaleDateString();
+            const time = now.toLocaleTimeString();
+            const total = getTotal();
+
+            currentReceipt = {
+                date,
+                time,
+                items: [...cart],
+                total,
+                method,
+                details,
+                receiptNumber: `RCP-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`
+            };
+
+            // Reset cart after successful payment
+            cart = [];
+            renderCart();
+            selectedPayment = null;
+            document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('selected'));
+            updatePayButton();
+        }
+
+        function closeModalAndShowReceipt() {
+            closeModal();
+            setTimeout(() => showReceipt(), 300);
+        }
+
+        function showReceipt() {
+            if (!currentReceipt) return;
+            
+            const receiptBody = document.getElementById('receiptBody');
+            const r = currentReceipt;
+            
+            let itemsHtml = r.items.map(item => `
+                <div class="receipt-item">
+                    <span>${item.name} x ${item.qty}</span>
+                    <span>$${item.subtotal.toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            let paymentDetails = '';
+            if (r.method === 'Cash') {
+                paymentDetails = `
+                    <div class="receipt-item"><span>Amount Given</span><span>$${r.details.amountGiven.toFixed(2)}</span></div>
+                    <div class="receipt-item"><span>Balance</span><span>$${r.details.balance.toFixed(2)}</span></div>
+                `;
+            } else if (r.method === 'Card') {
+                paymentDetails = `
+                    <div class="receipt-item"><span>Card</span><span>****${r.details.cardLast4}</span></div>
+                `;
+            } else if (r.method === 'QR') {
+                paymentDetails = `
+                    <div class="receipt-item"><span>QR Payment</span><span>✅</span></div>
+                `;
+            }
+
+            receiptBody.innerHTML = `
+                <div class="receipt" id="receiptContent">
+                    <h4>🧾 RECEIPT</h4>
+                    <div style="text-align: center; font-size: 12px; color: #666;">
+                        <div>Receipt #: ${r.receiptNumber}</div>
+                        <div>${r.date} ${r.time}</div>
+                    </div>
+                    <div class="receipt-line"></div>
+                    ${itemsHtml}
+                    <div class="receipt-line"></div>
+                    <div class="receipt-total">
+                        <span>TOTAL</span>
+                        <span>$${r.total.toFixed(2)}</span>
+                    </div>
+                    <div class="receipt-line"></div>
+                    <div style="font-weight: bold; margin: 10px 0;">Payment: ${r.method}</div>
+                    ${paymentDetails}
+                    <div class="receipt-line"></div>
+                    <div style="text-align: center; font-size: 12px; color: #666; margin-top: 10px;">
+                        Thank you for your purchase!
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('receiptModal').style.display = 'block';
+        }
+
+        // ========== PRINT RECEIPT (Without Print Window) ==========
+        function printReceipt() {
+            const receiptContent = document.getElementById('receiptContent');
+            if (!receiptContent) return;
+
+            // Create hidden iframe for printing
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = 'none';
+            document.body.appendChild(iframe);
+
+            const iframeDoc = iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(`
+                <html>
+                    <head>
+                        <title>Receipt</title>
+                        <style>
+                            body {
+                                font-family: 'Courier New', monospace;
+                                padding: 20px;
+                                margin: 0;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                min-height: 100vh;
+                                background: white;
+                            }
+                            .receipt {
+                                max-width: 350px;
+                                width: 100%;
+                                padding: 20px;
+                                border: 1px solid #ddd;
+                                border-radius: 8px;
+                            }
+                            .receipt-item {
+                                display: flex;
+                                justify-content: space-between;
+                                padding: 3px 0;
+                            }
+                            .receipt-total {
+                                display: flex;
+                                justify-content: space-between;
+                                font-weight: bold;
+                                font-size: 18px;
+                                margin: 10px 0;
+                            }
+                            .receipt-line {
+                                border-top: 1px dashed #999;
+                                margin: 10px 0;
+                            }
+                            .text-center {
+                                text-align: center;
+                            }
+                            h4 {
+                                text-align: center;
+                                margin-bottom: 10px;
+                            }
+                            .print-footer {
+                                text-align: center;
+                                margin-top: 20px;
+                                font-size: 12px;
+                                color: #666;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${receiptContent.outerHTML}
+                        <div class="print-footer">
+                            Printed: ${new Date().toLocaleString()}
+                        </div>
+                    </body>
+                </html>
+            `);
+            iframeDoc.close();
+
+            // Wait for content to load then print
+            setTimeout(() => {
+                try {
+                    iframe.contentWindow.print();
+                } catch (e) {
+                    // Fallback: open new window
+                    const printWindow = window.open('', '_blank', 'width=400,height=600');
+                    printWindow.document.write(iframeDoc.documentElement.outerHTML);
+                    printWindow.document.close();
+                    printWindow.focus();
+                    printWindow.print();
+                    setTimeout(() => printWindow.close(), 1000);
+                }
+                
+                // Remove iframe after printing
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 2000);
+            }, 500);
+        }
+
+        // ========== UTILITY FUNCTIONS ==========
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            setTimeout(() => {
+                msg.className = 'message';
+            }, 3000);
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function closeReceipt() {
+            document.getElementById('receiptModal').style.display = 'none';
+            currentReceipt = null;
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('paymentModal')) {
+                closeModal();
+            }
+            if (event.target === document.getElementById('receiptModal')) {
+                closeReceipt();
+            }
+        }
+
+        // Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const modal = document.getElementById('paymentModal');
+                if (modal.style.display === 'block') {
+                    const cashInput = document.getElementById('cashAmount');
+                    if (cashInput && document.activeElement === cashInput) {
+                        processCashPayment();
+                    }
+                    const cardInput = document.getElementById('cardNumber');
+                    if (cardInput && document.activeElement === cardInput) {
+                        processCardPayment();
+                    }
+                }
+            }
+        });
+
+        // ========== START ==========
+        init();
+    </script>
+</body>
+</html>
