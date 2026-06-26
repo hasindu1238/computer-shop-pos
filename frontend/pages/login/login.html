@@ -15,10 +15,10 @@
                 <div class="form-header">
                     <h1>Signin</h1>
                 </div>
-                <form class="form-box" action="" method="post">
+                <form class="form-box"  method="POST">
                     <div class="input-group">
                         <input type="text" id="username" class="input-field" placeholder="" required>
-                        <label for="email" class="floating-label">Enter Username</label>
+                        <label for="username" class="floating-label">Enter Username</label>
                     </div>
                     <div class="input-group">
                         <input type="password" id="password" class="input-field" placeholder="" required>
@@ -34,7 +34,14 @@
                         </div>
                         <div class="form-col">
                             <a href="#" class="form-link">Forgot password?</a>
-                        </div>
+                        </div>    
+                    </div>
+                    <div class="role-col">
+                      <input type="radio" id="admin" value="admin">
+                      <label for="admin">Admin</label>
+                      
+                      <input type="radio" id="cashier">
+                      <label for="cashier">Cashier</label>
                     </div>
                     <button type="submit" class="form-btn form-btn--submit">Login</button>
                 </form>
@@ -51,6 +58,6 @@
             <div class="circle1"></div>
             <div class="circle2"></div>
         </div>
-        <script src="../../assets/js/main.js"></script>
+        <script src="main.js"></script>
     </body>
 </html>

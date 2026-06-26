@@ -3,7 +3,7 @@ import db from "../config/db.js";
 export const createUser = (username, password) => {
     return new Promise((resolve, reject) => {
         db.run(
-            "INSERT INTO users (username, password) VALUES (?, ?)",
+            "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
             [username, password],
             function (err) {
                 if(err) reject(err);

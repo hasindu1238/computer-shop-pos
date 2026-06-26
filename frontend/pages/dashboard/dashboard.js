@@ -24,3 +24,13 @@ function initializeNavbar() {
   });
     
 }
+
+function parseJwt(token) {
+    return JSON.parse(atob(token.split('.')[1]));
+}
+
+const token = localStorage.getItem("token");
+const user = parseJwt(token);
+
+document.getElementById("user").innerText = user.username;
+document.getElementById("role").innerText = user.role;

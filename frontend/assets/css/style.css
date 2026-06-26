@@ -129,6 +129,12 @@ body{
     font-size: 14px;
 }
 
+.role-col{
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
 .remember-me{
     display: flex;
     align-items: center;
